@@ -59,10 +59,11 @@ If the answer is not in the retrieved content, say "I don't know".
 )
 
 
-result = Runner.run_sync(
-    agent,
-    input="what is physical ai?",
-    run_config= config)
+if __name__ == "__main__":
+    result = Runner.run_sync(
+        agent,
+        input="what is physical ai?",
+        run_config= config)
 
 
-print(result.final_output)
+    print(result.final_output)
