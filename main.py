@@ -40,8 +40,8 @@ async def process_query(query: dict):
         return {"error": "No query text provided"}, 400
 
     try:
-        # Run the RAG agent with the user's query
-        result = Runner.run_sync(
+        # Run the RAG agent with the user's query asynchronously
+        result = await Runner.run(
             agent,
             input=user_query,
             run_config=config
