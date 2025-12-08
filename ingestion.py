@@ -12,8 +12,8 @@ load_dotenv() # Load environment variables
 # -------------------------------------
 # CONFIG
 # -------------------------------------
-SITEMAP_URL = "https://physicalhumanoidaitextbook.vercel.app/sitemap.xml"
-COLLECTION_NAME = "humanoid_ai_book" # Consider making this an env var too if it changes
+SITEMAP_URL = "https://razaib-khan.github.io/physical-ai-robotics-textbook/"
+COLLECTION_NAME = "Physical-ai-book-cluster" # Consider making this an env var too if it changes
 
 cohere_api_key = os.getenv("COHERE_API_KEY")
 if not cohere_api_key:
