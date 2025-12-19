@@ -29,6 +29,7 @@ class TTLCache:
 
     def get(self, key: str) -> dict | None:
         """Get value from cache if exists and not expired."""
+        
         if key not in self.cache:
             self.misses += 1
             return None
@@ -267,9 +268,30 @@ async def process_query(query: dict, request: Request):
         import traceback
         print(f"Error processing query with RAG agent: {e}")
         traceback.print_exc()
+
+        # Check for specific error types and return appropriate messages
+        error_message = str(e)
+        status_code = 500
+
+        # Check if it's a rate limit error
+        if "429" in error_message or "quota" in error_message.lower() or "rate limit" in error_message.lower():
+            error_message = "⚠️ API quota exceeded. The free tier limit has been reached. Please try again later or contact support to upgrade."
+            status_code = 429
+        # Check if it's an authentication error
+        elif "401" in error_message or "unauthorized" in error_message.lower() or "authentication" in error_message.lower():
+            error_message = "Authentication error. Please check API credentials."
+            status_code = 500
+        # Check if it's a connection error
+        elif "connection" in error_message.lower() or "timeout" in error_message.lower():
+            error_message = "Failed to connect to the AI service. Please try again."
+            status_code = 503
+        # Generic error - show partial error for debugging but keep it user-friendly
+        else:
+            error_message = f"An error occurred while processing your query. Details: {error_message[:200]}"
+
         return JSONResponse(
-            status_code=500,
-            content={"error": "An error occurred while processing your query."}
+            status_code=status_code,
+            content={"error": error_message}
         )
 
 # You can import and use functions from ingestion.py here if needed for API endpoints
