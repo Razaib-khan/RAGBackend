@@ -22,15 +22,8 @@ if missing_vars:
 app = FastAPI()
 
 # Configure CORS
-# Allowed origins for frontend access
-# NOTE: Using wildcard "*" for development. In production, replace with specific origins.
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-    "http://localhost:3000", # Common for React/Docusaurus development server
-    "http://localhost:5173", # Common for Vite development server
-    "*" # Allow all origins for development. REMOVE in production and add specific URLs.
-]
+# Using wildcard for development. In production, replace with specific frontend URLs.
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
