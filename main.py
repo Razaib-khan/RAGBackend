@@ -242,6 +242,7 @@ async def process_query(query: dict, request: Request):
 
     try:
         # Run the RAG agent with the user's query asynchronously
+        print(f"🤖 Running agent for query: {user_query[:50]}...")
         result = await Runner.run(
             agent,
             input=user_query,
@@ -249,6 +250,8 @@ async def process_query(query: dict, request: Request):
         )
         # Extract the final output from the agent
         response_text = result.final_output
+        print(f"✅ Agent response: {response_text[:100]}...")
+
         response = {
             "response": response_text,
             "cached": False

@@ -6,11 +6,12 @@ from agents import enable_verbose_stdout_logging
 from connection import config
 import cohere
 from qdrant_client import QdrantClient
+import asyncio
 
 enable_verbose_stdout_logging()
 
 load_dotenv()
-set_tracing_disabled(disabled=True)
+set_tracing_disabled(disabled=False)
 
 
 
@@ -23,16 +24,21 @@ qdrant = QdrantClient(
     api_key=os.getenv("QDRANT_VECTOR_DATABASE_API_KEY") 
 )
 
-
+embedding_cache = {}
 
 def get_embedding(text):
     """Get embedding vector from Cohere Embed v3"""
+    if text in embedding_cache:
+        return embedding_cache[text]
+
     response = cohere_client.embed(
         model="embed-english-v3.0",
         input_type="search_query",  # Use search_query for queries
         texts=[text],
     )
-    return response.embeddings[0]  # Return the first embedding
+    embedding = response.embeddings[0]
+    embedding_cache[text] = embedding
+    return embedding
 
 
 @function_tool
@@ -58,12 +64,5 @@ If the answer is not in the retrieved content, say "I don't know".
     tools=[retrieve]
 )
 
-
-if __name__ == "__main__":
-    result = Runner.run_sync(
-        agent,
-        input="what is physical ai?",
-        run_config= config)
-
-
-    print(result.final_output)
+# Agent is now ready to be used by main.py
+# No hardcoded test code - input comes from user queries via API
