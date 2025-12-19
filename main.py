@@ -6,7 +6,7 @@ from agent import agent # Import the agent instance
 from agents import Runner # Import Runner from the agents framework
 from connection import config # Import the run configuration
 
-# Validate required environment variables
+# Validate required environment variables (warning only, doesn't block startup)
 REQUIRED_ENV_VARS = [
     "GEMINI_API_KEY",
     "COHERE_MODEL_API",
@@ -16,10 +16,8 @@ REQUIRED_ENV_VARS = [
 
 missing_vars = [var for var in REQUIRED_ENV_VARS if not os.getenv(var)]
 if missing_vars:
-    raise EnvironmentError(
-        f"Missing required environment variables: {', '.join(missing_vars)}. "
-        f"Please check your .env file or environment configuration."
-    )
+    print(f"⚠️  Warning: Missing environment variables: {', '.join(missing_vars)}")
+    print("⚠️  The application may not function correctly without these variables.")
 
 app = FastAPI()
 
