@@ -1,21 +1,38 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 import os
 from agent import agent # Import the agent instance
 from agents import Runner # Import Runner from the agents framework
 from connection import config # Import the run configuration
 
+# Validate required environment variables
+REQUIRED_ENV_VARS = [
+    "GEMINI_API_KEY",
+    "COHERE_MODEL_API",
+    "QDRANT_VECTOR_DATABASE_URL_ENDPOINT",
+    "QDRANT_VECTOR_DATABASE_API_KEY",
+]
+
+missing_vars = [var for var in REQUIRED_ENV_VARS if not os.getenv(var)]
+if missing_vars:
+    raise EnvironmentError(
+        f"Missing required environment variables: {', '.join(missing_vars)}. "
+        f"Please check your .env file or environment configuration."
+    )
+
 app = FastAPI()
 
 # Configure CORS
-# In a production environment, you should replace "*" with the actual
-# origin(s) of your frontend application (e.g., "https://your-frontend-app.vercel.app")
+# Allowed origins for frontend access
 origins = [
     "http://localhost",
     "http://localhost:8080",
     "http://localhost:3000", # Common for React development server
     "http://localhost:5173", # Common for Vite development server
-    "*" # WARNING: This allows all origins. Restrict in production.
+    # Add your production frontend URLs here:
+    # "https://your-app.github.io",
+    # "https://your-app.vercel.app",
 ]
 
 app.add_middleware(
@@ -36,8 +53,20 @@ async def process_query(query: dict):
     Processes a user query using the RAG agent.
     """
     user_query = query.get("text")
-    if not user_query:
-        return {"error": "No query text provided"}, 400
+
+    # Validate query text exists and is not empty/whitespace
+    if not user_query or not user_query.strip():
+        return JSONResponse(
+            status_code=400,
+            content={"error": "No query text provided"}
+        )
+
+    # Validate query length (defense-in-depth, frontend also validates)
+    if len(user_query) > 1000:
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Query too long (max 1000 characters)"}
+        )
 
     try:
         # Run the RAG agent with the user's query asynchronously
@@ -52,7 +81,10 @@ async def process_query(query: dict):
     except Exception as e:
         # Handle any exceptions that occur during the agent's execution
         print(f"Error processing query with RAG agent: {e}")
-        return {"error": "An error occurred while processing your query."}, 500
+        return JSONResponse(
+            status_code=500,
+            content={"error": "An error occurred while processing your query."}
+        )
 
 # You can import and use functions from ingestion.py here if needed for API endpoints
 # For example, to trigger ingestion via an API endpoint (though typically not recommended for public exposure)
