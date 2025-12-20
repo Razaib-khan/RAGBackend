@@ -125,7 +125,7 @@ rate_limiter = RateLimiter(requests_per_minute=10)  # 10 requests per minute per
 
 # Validate required environment variables (warning only, doesn't block startup)
 REQUIRED_ENV_VARS = [
-    "GEMINI_API_KEY",
+    "OPENROUTER_API_KEY",
     "COHERE_MODEL_API",
     "QDRANT_VECTOR_DATABASE_URL_ENDPOINT",
     "QDRANT_VECTOR_DATABASE_API_KEY",
