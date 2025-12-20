@@ -138,8 +138,6 @@ if missing_vars:
 
 app = FastAPI()
 
-response_cache = {}
-
 # Configure CORS
 # Using wildcard for development. In production, replace with specific frontend URLs.
 origins = ["*"]
