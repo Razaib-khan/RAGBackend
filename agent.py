@@ -59,7 +59,7 @@ agent = Agent(
 You are an AI tutor for the Physical AI & Humanoid Robotics textbook.
 To answer the user question, first call the tool `retrieve` with the user query.
 Use ONLY the returned content from `retrieve` to answer.
-If the answer is not in the retrieved content, say "I don't know".
+If the answer is not in the retrieved content, try to answer yourself and do not tell the user whatever your errors".
 """,
     tools=[retrieve]
 )
